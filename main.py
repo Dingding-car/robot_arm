@@ -1,57 +1,42 @@
-import serial
 import time
-import struct
-from uservo import UartServoManager
+# 从初始化文件导入函数和默认参数
+from servo_init import init_servo_system, SERVO_ID
 
-# 串口参数配置
-# 报错请重新插拔串口
-SERVO_PORT = "COM8"
-SERVO_BAUDRATE = 115200
-SERVO_ID = [i for i in range(6)] # 舵机ID号，底座为0，依次递增
+# 主文件中自定义COM口（可按需修改，或通过命令行/配置文件读取）
+SERVO_PORT = "COM8"  # 这里可以自由修改COM口
 
-# # 选择要控制的舵机ID
-# id = 2
+def main():
+    uart = None  # 初始化串口变量，确保finally能访问
+    try:
+        # 调用外部初始化函数，传入自定义COM口和舵机ID列表
+        uart, servo_manager = init_servo_system(
+            servo_port=SERVO_PORT,  # 传入COM口参数
+            servo_ids=SERVO_ID     # 可选：自定义舵机ID列表，如[0,1,2]
+        )
 
-# 初始化串口
-uart = serial.Serial(
-  port= SERVO_PORT,
-  baudrate= SERVO_BAUDRATE,
-  parity= serial.PARITY_NONE,
-  stopbits= 1,
-  bytesize= 8,
-  timeout= 0.05
-)
+        # -------------------------- 核心业务逻辑 --------------------------
+        print("\n⏳ 等待2秒钟……")
+        time.sleep(2)
+        print("✅ 等待结束")
 
-# 初始化舵机管理器
-print("设备扫描中……")
-servo_manager = UartServoManager(
-  uart,
-  is_scan_servo= True,
-  srv_num= 254
-  )
+        # （可选）舵机角度控制示例（修正原索引错误）
+        set_angle = 5  # 目标角度
+        for servo_id in SERVO_ID:
+            print(f"\n[单圈模式] 控制舵机ID={servo_id} 旋转到 {set_angle} 度")
+            servo_manager.set_servo_angle(servo_id, set_angle, interval=0)
+            # servo_manager.wait()
+            # current_angle = servo_manager.query_servo_angle(servo_id=servo_id)
+            # print(f"舵机ID={servo_id} 当前角度: {current_angle} 度")
+        # ----------------------------------------------------------------
 
-# 检测在线舵机
-online_servo_ids = list(servo_manager.servos.keys())
-if not online_servo_ids:
-    print(f"{SERVO_PORT}上未检测到任何舵机！")
-else:
-    print(f"{SERVO_PORT}上在线的舵机ID：{online_servo_ids}")
-for id in SERVO_ID:
-  is_online = servo_manager.ping(SERVO_ID[id])
-  print(f"舵机ID= {SERVO_ID[id]} 在线状态: {is_online}")
+    except Exception as e:
+        print(f"\n❌ 程序执行出错：{e}")
+    finally:
+        # 确保串口最终关闭（无论是否异常）
+        if uart and uart.is_open:
+            uart.close()
+            print("\n🔌 串口已关闭")
 
-# 等待时间
-print("等待2秒钟……")
-time.sleep(2)
-print("等待结束")
-
-# 舵机角度控制
-set_angle = 0
-for id in SERVO_ID:
-  print(f"[单圈模式] 将舵机ID= {SERVO_ID[id]} 旋转到 {set_angle} 度")
-  servo_manager.set_servo_angle(SERVO_ID[id], set_angle, interval= 0)
-  # servo_manager.wait()
-
-# 关闭串口
-uart.close()
-print("串口已关闭")
+# 程序入口
+if __name__ == "__main__":
+    main()
