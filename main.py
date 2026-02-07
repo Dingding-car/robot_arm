@@ -15,19 +15,27 @@ def main():
         )
 
         # -------------------------- 核心业务逻辑 --------------------------
-        print("\n⏳ 等待2秒钟……")
-        time.sleep(2)
-        print("✅ 等待结束")
+        # print("\n⏳ 等待2秒钟……")
+        # time.sleep(2)
+        # print("✅ 等待结束")
 
-        # （可选）舵机角度控制示例（修正原索引错误）
-        set_angle = 5  # 目标角度
+        # 舵机角度控制
+        set_angle = 0 # 目标角度
         for servo_id in SERVO_ID:
+            if servo_id == 5 and set_angle == 0:
+                set_angle = 5 # 夹爪设置5度，防止电机堵转
             print(f"\n[单圈模式] 控制舵机ID={servo_id} 旋转到 {set_angle} 度")
-            servo_manager.set_servo_angle(servo_id, set_angle, interval=0)
-            time.sleep(0.1)
-            # servo_manager.wait()
-            # current_angle = servo_manager.query_servo_angle(servo_id=servo_id)
-            # print(f"舵机ID={servo_id} 当前角度: {current_angle} 度")
+            servo_manager.set_servo_angle(servo_id, set_angle, velocity= 150, t_acc= 100, t_dec= 100)
+            # time.sleep(0.2)
+        servo_manager.wait()
+
+
+        # # 舵机阻尼模式
+        # power = 100 # 阻尼功率，单位mW
+        # for servo_id in SERVO_ID:
+        #   print(f"\n[阻尼模式] 设置舵机ID={servo_id} 阻尼功率 {power} mW")
+        #   servo_manager.set_damping(servo_id, power)
+        #   time.sleep(0.2)
         # ----------------------------------------------------------------
 
     except Exception as e:
