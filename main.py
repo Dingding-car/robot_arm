@@ -9,8 +9,8 @@ SERVO_PORT = "COM8"
 SERVO_BAUDRATE = 115200
 SERVO_ID = [i for i in range(6)] # 舵机ID号，底座为0，依次递增
 
-# 选择要控制的舵机ID
-id = 2
+# # 选择要控制的舵机ID
+# id = 2
 
 # 初始化串口
 uart = serial.Serial(
@@ -36,9 +36,9 @@ if not online_servo_ids:
     print(f"{SERVO_PORT}上未检测到任何舵机！")
 else:
     print(f"{SERVO_PORT}上在线的舵机ID：{online_servo_ids}")
-
-is_online = servo_manager.ping(SERVO_ID[id])
-print(f"舵机ID= {SERVO_ID[id]} 在线状态: {is_online}")
+for id in SERVO_ID:
+  is_online = servo_manager.ping(SERVO_ID[id])
+  print(f"舵机ID= {SERVO_ID[id]} 在线状态: {is_online}")
 
 # 等待时间
 print("等待2秒钟……")
@@ -47,9 +47,10 @@ print("等待结束")
 
 # 舵机角度控制
 set_angle = 0
-print(f"[单圈模式] 将舵机ID= {SERVO_ID[id]} 旋转到 {set_angle} 度")
-servo_manager.set_servo_angle(SERVO_ID[id], set_angle, interval= 0)
-servo_manager.wait()
+for id in SERVO_ID:
+  print(f"[单圈模式] 将舵机ID= {SERVO_ID[id]} 旋转到 {set_angle} 度")
+  servo_manager.set_servo_angle(SERVO_ID[id], set_angle, interval= 0)
+  # servo_manager.wait()
 
 # 关闭串口
 uart.close()
