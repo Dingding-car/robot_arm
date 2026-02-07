@@ -37,7 +37,7 @@ def init_servo_manager(uart, servo_port):
     servo_manager = UartServoManager(
         uart,
         is_scan_servo=True,
-        srv_num=254
+        srv_num=10
     )
     # 检测全局在线舵机
     online_servo_ids = list(servo_manager.servos.keys())

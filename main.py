@@ -24,6 +24,7 @@ def main():
         for servo_id in SERVO_ID:
             print(f"\n[单圈模式] 控制舵机ID={servo_id} 旋转到 {set_angle} 度")
             servo_manager.set_servo_angle(servo_id, set_angle, interval=0)
+            time.sleep(0.1)
             # servo_manager.wait()
             # current_angle = servo_manager.query_servo_angle(servo_id=servo_id)
             # print(f"舵机ID={servo_id} 当前角度: {current_angle} 度")
