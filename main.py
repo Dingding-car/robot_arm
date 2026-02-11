@@ -7,20 +7,20 @@ import sys
 sys.path.append("./kinematic")
 from kinematic.arm5dof_uservo import Arm5DoFUServo
 # 从配置文件导入参数
-from kinematic.config import *
+# from kinematic.config import *
 
 
-SERVO_PORT = DEVICE_PORT_DEFAULT  # 使用配置文件中的默认COM口
+SERVO_PORT = 'COM8'  # 使用配置文件中的默认COM口
 
 def main():
   # 初始化舵机系统
-  servo_manager = Arm5DoFUServo(is_init_pose= False)
+  servo_manager = Arm5DoFUServo(device= SERVO_PORT, is_init_pose= False)
   servo_manager.home() # 回零
 
   # -------------------------- 核心业务逻辑 --------------------------
 
   # servo_manager.set_damping(1000)
-  print(servo_manager.get_tool_pose())
+  # print(servo_manager.get_tool_pose())
 
   # ----------------------------------------------------------------
 
